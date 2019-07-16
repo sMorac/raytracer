@@ -196,30 +196,26 @@ pub fn print_image() {
     let size_slice = size_coordinates / 8;
     let rest = size_coordinates % 8;
     let mut comp = Vec::new() ;
-    let mut processing = Vec::new() ;
     for _num_thread in 0..8 {
         comp.push(Mutex::new(HashMap::new()));
-        processing.push(Mutex::new(false));
     }
     let computation = Arc::new(comp);
-    let processing_arc = Arc::new(processing);
     let share_coordinates = Arc::new(coordinates);
     let mut handles = vec![];
     for num_thread in 0..8 {
-        let computation_local = Arc::clone(&computation);
-        let local_coordinates = Arc::clone(&share_coordinates);
-        let local_camera = Arc::clone(&camera);
-        let local_rs = Arc::clone(&random_scene);
-        let local_processing = Arc::clone(&processing_arc);
+        let computation = Arc::clone(&computation);
+        let coordinates = Arc::clone(&share_coordinates);
+        let camera = Arc::clone(&camera);
+        let random_scene = Arc::clone(&random_scene);
         let handle = thread::spawn(move || {
-            let mut map = computation_local[num_thread].lock().unwrap();
+            let mut map = computation[num_thread].lock().unwrap();
             let start = num_thread * size_slice;
             let mut end = (num_thread + 1) * size_slice - 1;
             if num_thread == 7 {
                 end += rest;
             }
             // println!("n{} s{} e{} l{}", num_thread, start, end, size_coordinates);
-            for (i, j) in &local_coordinates[start..end+1] {
+            for (i, j) in &coordinates[start..end+1] {
                 map.insert((*i, *j), 
                     render_color(
                         s_size, 
@@ -227,13 +223,11 @@ pub fn print_image() {
                         *j as f32,
                         x_size as f32,
                         y_size as f32,
-                        &local_camera,
-                        &local_rs,
+                        &camera,
+                        &random_scene,
                     )
                 );
             }
-            let mut set_done = local_processing[num_thread].lock().unwrap();
-            *set_done = true;
         });
         handles.push(handle)
     }
