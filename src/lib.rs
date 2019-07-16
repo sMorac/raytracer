@@ -169,29 +169,6 @@ pub fn print_image() {
     println!("P3");
     println!("{} {}", x_size, y_size);
     println!("255");
-    let sphere1 = Sphere::new(
-        Vec3::new(0.0, 0.0, -1.0),
-        0.5,
-        Lambertian::new(
-            Color { red: 0.1, green: 0.2, blue: 0.5 }
-        )
-    );
-    let sphere2 = Sphere::new(
-        Vec3::new(0.0, -100.5, -1.0),
-        100.0,
-        Lambertian::new(
-            Color { red: 0.8, green: 0.8, blue: 0.0 }
-        )
-    );
-    let sphere3 = Sphere::new(Vec3::new(1.0, 0.0, -1.0), 0.5, Metal::new(Color{ red: 0.8, green: 0.6, blue: 0.2 }, 0.3));
-    let sphere4 = Sphere::new(Vec3::new(-1.0, 0.0, -1.0), 0.5, Dielectric::new(1.5));
-    let sphere5 = Sphere::new(Vec3::new(-1.0, 0.0, -1.0), -0.45, Dielectric::new(1.5));
-    let mut world = HitList{ hitlist: Vec::new() };
-    world.hitlist.push(Box::new(sphere1));
-    world.hitlist.push(Box::new(sphere2));
-    world.hitlist.push(Box::new(sphere3));
-    world.hitlist.push(Box::new(sphere4));
-    world.hitlist.push(Box::new(sphere5));
     let random_scene = Arc::new(random_scene());
 
     let look_from = Vec3::new(20.0 * 0.47f32.cos(), 20.0 * 0.47f32.sin(), 3.0);
