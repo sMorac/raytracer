@@ -14,7 +14,8 @@ use color::ColorU8;
 use ray::Ray;
 use hitable::Hitable;
 use hitable::Sphere;
-use hitable::HitList;
+use hitable::Plane;
+use hitable::Scene;
 use material::Metal;
 use material::Lambertian;
 use material::Dielectric;
@@ -30,7 +31,7 @@ fn render_color(
     x_size: f32,
     y_size: f32,
     camera: &Camera,
-    random_scene: &HitList
+    random_scene: &Scene
 ) -> ColorU8 {
     let mut rng = thread_rng();
     let mut rendered_color = Color::black();
@@ -65,9 +66,9 @@ fn color<T: Hitable>(ray: &Ray, world: &T, depth: u8) -> Color {
     (1.0 - t) * Color::white() + t * Color{ red: 0.5, green: 0.7, blue: 1.0 }
 }
 
-pub fn random_scene() -> HitList {
+pub fn random_scene() -> Scene {
     let mut rng = thread_rng();
-    let mut world = HitList{ hitlist: Vec::new() };
+    let mut world = Scene{ hitlist: Vec::new() };
     let obj0 = Sphere::new(
         Vec3::new(0.0, 0.0, -1000.0),
         1000.0,
@@ -154,7 +155,20 @@ pub fn random_scene() -> HitList {
                             )
                         )
                     ));
-
+    world.hitlist.push(Box::new(
+                        Plane::new(
+                            Vec3::new(1.0, 0.0, 0.0),
+                            Vec3::new(1.0, 1.0, 1.0),
+                            Metal::new(
+                                Color {
+                                    red: 0.85,
+                                    green: 0.9,
+                                    blue: 0.7
+                                },
+                                0.0
+                            )
+                        )
+                    ));
     world
 }
 
