@@ -196,39 +196,102 @@ impl ops::DivAssign<f32> for Vec3 {
         };
     }
 }
-
+impl PartialEq for Vec3 {
+    fn eq(&self, other: &Self) -> bool {
+        self.x == other.x && self.y == other.y && self.z == other.z
+    }
+}
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_vec3() {
+    fn test_init_vec3() {
             // raytracer::print_test_image();
-        let mut s = Vec3::new(1.0, 1.0, 1.0);
-        println!("{}", s);
+        let s = Vec3::new(1.0, 1.0, 1.0);
+        assert_eq!(s, Vec3{x: 1.0, y:1.0, z:1.0});
+    }
+    #[test]
+    fn test_neg_vec3() {
+        let s = Vec3::new(1.0, 1.0, 1.0);
         let ms = -s;
-        println!("{}", ms);
+        assert_eq!(ms, Vec3{x: -1.0, y: -1.0, z: -1.0});
+    }
+    #[test]
+    fn test_add_vect3() {
+        // add assign
+        let mut s = Vec3::new(1.0, 1.0, 1.0);
+        let ms = -s;
         s += ms;
-        println!("{}", s);
+        assert_eq!(s, Vec3{x: 0.0, y:0.0, z: 0.0});
+        // add
+        assert_eq!(s + Vec3::new(1.0, 1.0, 1.0), Vec3::new(1.0, 1.0, 1.0));
+    }
+    #[test]
+    fn test_sub_vec3() {
+        // add assign
+        let mut s = Vec3::new(1.0, 1.0, 1.0);
+        let ms = -s;
         s -= ms;
-        println!("{}", s);
-        println!("{}", s.length());
-        println!("{}", s.square_length());
-        s *= ms;
-        println!("{}", s);
+        assert_eq!(s, Vec3{x: 2.0, y:2.0, z: 2.0});
+        // add
+        assert_eq!(s - Vec3::new(1.0, 1.0, 1.0), Vec3::new(1.0, 1.0, 1.0));
+    }
+    #[test]
+    fn test_length_vec3() {
+        let s = Vec3::new(2.0, 2.0, 2.0);
+        let twelve = 12.0 as f32;
+        assert_eq!(s.length(), twelve.sqrt());
+    }
+    #[test]
+    fn test_square_length_vec3() {
+        let s = Vec3::new(2.0, 2.0, 2.0);
+        assert_eq!(s.square_length(), 12.0);
+    }
+    #[test]
+    fn test_mul_vec3() {
+        let mut s = Vec3::new(2.0, 2.0, 2.0);
+        let t = Vec3::new(-1.0, -1.0, -1.0);
+        s *= t;
+        assert_eq!(s, Vec3::new(-2.0, -2.0, -2.0));
         s *= 3.0;
-        println!("{}", s);
-        s /= 3.0;
-        println!("{}", s);
-        s /= ms;
-        println!("{}", s);
-        let uv = s.make_unit_vector();
-        println!("{}", s);
-        println!("{}", uv);
-        let a = Vec3::new(1.0, 0.0, 0.0);
-        let b = Vec3::new(0.0, 1.0, 0.0);
-        let c = a.cross(b);
-        println!("{}", c);
-        println!("{}", c.dot(uv));
+        assert_eq!(s, Vec3::new(-6.0, -6.0, -6.0));
+        let u = s * t;
+        assert_eq!(u, Vec3::new(6.0, 6.0, 6.0));
+    }
+    #[test]
+    fn test_div_vec3() {
+        let mut s = Vec3::new(2.0, 2.0, 2.0);
+        let t = Vec3::new(-1.0, -1.0, -1.0);
+        s /= t;
+        assert_eq!(s, Vec3::new(-2.0, -2.0, -2.0));
+        s /= 2.0;
+        assert_eq!(s, Vec3::new(-1.0, -1.0, -1.0));
+        let u = s * t;
+        assert_eq!(u, Vec3::new(1.0, 1.0, 1.0));
+    }
+    #[test]
+    fn test_cross_vec3() {
+        let u = Vec3::new(1.0, 1.0, 1.0);
+        let v = Vec3::new(1.0, 1.0, 1.0);
+        let uv = u.cross(v);
+        assert_eq!(uv, Vec3::new_zero());
+        let w = Vec3::new(1.0, 0.0, 0.0);
+        let uw = u.cross(w);
+        assert_eq!(uw, Vec3::new(0.0, 1.0, -1.0));
+    }
+    #[test]
+    fn test_dot_vec3() {
+        let u = Vec3::new(1.0, 1.0, 1.0);
+        let v = Vec3::new(1.0, 1.0, 1.0);
+        let dot_product = u.dot(v);
+        assert_eq!(dot_product, 3.0);
+    }
+    #[test]
+    fn test_unit_vector_vec3() {
+        let u = Vec3::new(1.0, 1.0, 1.0);
+        let unit = u.make_unit_vector();
+        let value = 1.0 / u.length();
+        assert_eq!(unit, Vec3::new(value, value, value));
     }
 }
